@@ -8,6 +8,7 @@ contract vaccine{
     address public _owner;
     uint public vaccines_counts;
     uint public states_count;
+    uint public district_count;
 
     
     enum completion {notregister,registred, pending , Completed}
@@ -37,6 +38,11 @@ contract vaccine{
         uint temp_max;
         address company_add;
     }
+
+    struct order{
+        uint company_id;
+        uint allotment;
+    }
     
     struct vaccines{
         uint id;
@@ -60,6 +66,20 @@ contract vaccine{
         address state_add;
         uint allocation;
     }
+
+    struct district{
+        uint id;
+        string name;
+        address add;
+        uint allocation;
+    }
+
+    event _district(
+        uint id,
+        string name,
+        address add,
+        uint allocation
+    );
 
     event _state(
         uint id,
@@ -122,9 +142,17 @@ contract vaccine{
     mapping(uint => vaccines) public _vaccines;
     mapping(address => manager) public _managers;
     mapping(address => state) public states;
+    mapping(address => district) public districts;
+    mapping(uint => order) public orders;
 
     state[] public stateInfo;
     state private stateTemp;
+
+    district[] public districtInfo;
+    district private districtTemp;
+
+    vaccine_type[] public vaccinesInfo;
+    vaccine_type private vaccineTemp;
     
     constructor() public
     {
@@ -134,6 +162,7 @@ contract vaccine{
         types_counts = 0;
         vaccines_counts = 0;
         states_count = 0;
+        district_count = 0;
     }
     
     
@@ -150,6 +179,8 @@ contract vaccine{
     function View_types_Count() public view returns(uint){
         return types_counts;
     }
+
+
     
     function register_state(string memory name,address state_add)public onlyOwner
     {
@@ -169,9 +200,42 @@ contract vaccine{
     }
 
 
+    function place_order(uint company_id,uint newOrder)public onlyOwner
+    {
+        orders[company_id].allotment+=newOrder;
+    }
+
+    function register_district(string memory name,address district_add)public onlyOwner
+    {
+        districtTemp.id = district_count;
+        districtTemp.name = name;
+        districtTemp.add = district_add;
+        districtTemp.allocation = 0;
+        districtInfo.push(districtTemp);
+        districts[district_add] = districtTemp;
+        district_count++;
+    }
+
+    function update_district_allocation(uint district_id,uint newOrder)public onlyOwner
+    {
+        districtInfo[district_id].allocation+=newOrder;
+        districts[districtInfo[district_id].add].allocation+=newOrder;
+    }
+
+
     function getAllStatesInfo() public view returns (state[] memory)
     {
         return stateInfo;
+    }
+
+    function getAllvaccineInfo() public view returns (vaccine_type[] memory)
+    {
+        return vaccinesInfo;
+    }
+
+    function getAllDistrictInfo() public view returns (district[] memory)
+    {
+        return districtInfo;
     }
 
 

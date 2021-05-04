@@ -47,6 +47,11 @@ class temp extends Component {
       this.setState({ states_count })
       const states = await delivery.methods.getAllStatesInfo().call()
       this.setState({ states })
+      const company = await delivery.methods.getAllvaccineInfo().call()
+      this.setState({ company })
+      const district = await delivery.methods.getAllDistrictInfo().call()
+      this.setState({ district })
+      console.log(company);
       // Load states
       //console.log(delivery.methods.getAllStatesInfo().call())
       
@@ -62,11 +67,16 @@ class temp extends Component {
         account: '',
         states_count: 0,
         states: [],
+        company:[],
+        district:[],
         loading: true
     }
 
     this.register_state = this.register_state.bind(this)
     this.update_state = this.update_state.bind(this)
+    this.register_company = this.register_company.bind(this)
+    this.vaccine_registration = this.vaccine_registration.bind(this)
+    this.place_order = this.place_order.bind(this)
 
   }
 
@@ -87,6 +97,32 @@ class temp extends Component {
     })
   }
 
+  register_company(period,temp_min,temp_max,name,company_add) {
+    this.setState({ loading: true })
+    this.state.delivery.methods.register_company(period,temp_min,temp_max,name,company_add).send({ from: this.state.account })
+    .once('receipt', (receipt) => {
+      this.setState({ loading: false })
+    })
+  }
+
+  vaccine_registration(company_id,batch,time,cur_temp) {
+    this.setState({ loading: true })
+    this.state.delivery.methods.vaccine_registration(company_id,batch,time,cur_temp).send({ from: this.state.account })
+    .once('receipt', (receipt) => {
+      this.setState({ loading: false })
+    })
+  }
+
+  place_order(company_id,newOrder) {
+    this.setState({ loading: true })
+    this.state.delivery.methods.place_order(company_id,newOrder).send({ from: this.state.account })
+    .once('receipt', (receipt) => {
+      this.setState({ loading: false })
+    })
+  }
+
+  
+
 
 
   render() {
@@ -103,8 +139,17 @@ class temp extends Component {
                     states = {this.state.states}
                     states_count = {this.state.states_count}
 
+                    company = {this.state.company}
+                    district = {this.state.district}
+
+
                     register_state = {this.register_state}
                     update_state = {this.update_state}
+
+                    register_company = {this.register_company}
+                    vaccine_registration = {this.vaccine_registration}
+                    place_order = {this.place_order}
+                    
                     />
               }
             </main>
