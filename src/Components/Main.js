@@ -263,7 +263,95 @@ class Main extends Component {
           </tbody>
         </table>
 
+        <h1>Register District</h1>
+        <form onSubmit={(event) => {
 
+          event.preventDefault()
+          const district_name = this.district_name.value
+          const district_add = this.district_add.value
+          this.props.register_district(district_name,district_add)
+
+        }}>
+
+          <div className="form-group mr-sm-2">
+            <input
+              id="name"
+              type="text"
+              ref={(input) => { this.district_name = input }}
+              className="form-control"
+              placeholder="District Name"
+              required />
+          </div>
+          <div className="form-group mr-sm-2">
+            <input
+              id="District_add"
+              type="text"
+              ref={(input) => { this.district_add = input }}
+              className="form-control"
+              placeholder="District Account address"
+              required />
+          </div>
+          <button type="submit" className="btn btn-primary">Register District</button>
+        </form>
+        <p>&nbsp;</p>
+
+        
+
+        <h1>Allocation to district</h1>
+        <form onSubmit={(event) => {
+          event.preventDefault()
+          const district_id = this.district_id.value
+          const newOrder = this.newOrder.value
+          this.props.update_district_allocation(district_id,newOrder)
+        }}>
+          <div className="form-group mr-sm-2">
+            <input
+              id="district_id"
+              type="text"
+              ref={(input) => { this.district_id = input }}
+              className="form-control"
+              placeholder="district_id"
+              required />
+          </div>
+          <div className="form-group mr-sm-2">
+            <input
+              id="new_order"
+              type="text"
+              ref={(input) => { this.newOrder = input }}
+              className="form-control"
+              placeholder="new_order"
+              required />
+          </div>
+          <button type="submit" className="btn btn-primary">update</button>
+        </form>
+        <p>&nbsp;</p>
+
+        
+        <h1>Districts</h1>
+        <table className="table">
+          <thead>
+            <tr>
+              <th scope="col">id</th>
+              <th scope="col">Name </th>
+              {/* <th scope="col">State id </th> */}
+              <th scope="col">Address </th> 
+              <th scope="col">Allocation </th>
+            </tr>
+          </thead>
+          { <tbody id="states details">
+            { this.props.district.map((state, key) => {
+              return(
+                <tr key={key}>
+                  <th scope="row">{state.id.toString()}</th>
+                  <td>{state.name.toString()}</td>
+                  {/* <td>{state.stateid.toString()}</td> */}
+                  <td>{state.add.toString()}</td> }
+                  <td>{state.allocation.toString()}</td>
+                </tr>  
+              )
+            })}
+          </tbody> }
+        </table>
 
 
         

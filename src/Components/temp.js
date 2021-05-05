@@ -51,7 +51,8 @@ class temp extends Component {
       this.setState({ company })
       const district = await delivery.methods.getAllDistrictInfo().call()
       this.setState({ district })
-      console.log(company);
+      console.log(company)
+      console.log(district)
       // Load states
       //console.log(delivery.methods.getAllStatesInfo().call())
       
@@ -77,6 +78,7 @@ class temp extends Component {
     this.register_company = this.register_company.bind(this)
     this.vaccine_registration = this.vaccine_registration.bind(this)
     this.place_order = this.place_order.bind(this)
+    this.register_district = this.register_district.bind(this)
 
   }
 
@@ -121,6 +123,23 @@ class temp extends Component {
     })
   }
 
+
+  register_district(name,district_add) {
+    this.setState({ loading: true })
+    this.state.delivery.methods.register_district(name,district_add).send({ from: this.state.account })
+    .once('receipt', (receipt) => {
+      this.setState({ loading: false })
+    })
+  }
+
+  update_district_allocation(district_id,newOrder) {
+    this.setState({ loading: true })
+    this.state.delivery.methods.update_district_allocation(district_id,newOrder).send({ from: this.state.account })
+    .once('receipt', (receipt) => {
+      this.setState({ loading: false })
+    })
+  }
+
   
 
 
@@ -145,6 +164,9 @@ class temp extends Component {
 
                     register_state = {this.register_state}
                     update_state = {this.update_state}
+
+                    register_district = {this.register_district}
+                    update_district_allocation  = {this.update_district_allocation}
 
                     register_company = {this.register_company}
                     vaccine_registration = {this.vaccine_registration}

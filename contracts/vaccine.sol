@@ -41,6 +41,7 @@ contract vaccine{
 
     struct order{
         uint company_id;
+        uint date;
         uint allotment;
     }
     
@@ -68,6 +69,7 @@ contract vaccine{
     }
 
     struct district{
+        uint stateid;
         uint id;
         string name;
         address add;
@@ -75,6 +77,7 @@ contract vaccine{
     }
 
     event _district(
+        uint stateid,
         uint id,
         string name,
         address add,
@@ -207,6 +210,7 @@ contract vaccine{
 
     function register_district(string memory name,address district_add)public onlyOwner
     {
+        districtTemp.stateid = states[msg.sender].id;
         districtTemp.id = district_count;
         districtTemp.name = name;
         districtTemp.add = district_add;
@@ -242,15 +246,23 @@ contract vaccine{
     function register_company(uint period,uint temp_min,uint temp_max,string memory name,address company_add)public onlyOwner
     {
         types_counts++;
-        _vaccine_types[types_counts].name = name;
-        _vaccine_types[types_counts].company_id = types_counts;
-        _vaccine_types[types_counts].temp_max = temp_max;
-        _vaccine_types[types_counts].temp_min = temp_min;
-        _vaccine_types[types_counts].valid_days = period;
-        _vaccine_types[types_counts].company_add = company_add;
+
+        vaccineTemp.name = name;
+        vaccineTemp.company_id = types_counts;
+        vaccineTemp.temp_max = temp_max;
+        vaccineTemp.temp_min = temp_min;
+        vaccineTemp.valid_days = period;
+        vaccineTemp.company_add = company_add;
+
+        _vaccine_types[types_counts] = vaccineTemp;
+        vaccinesInfo.push(vaccineTemp);
+
         _managers[company_add].company_id =types_counts;
         _managers[company_add].manager_add = company_add;
+
          emit _vaccine_type(name,types_counts,period,temp_min,temp_max,company_add);
+
+         types_counts++;
     }
     
     
