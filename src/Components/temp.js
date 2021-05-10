@@ -79,6 +79,7 @@ class temp extends Component {
     this.vaccine_registration = this.vaccine_registration.bind(this)
     this.place_order = this.place_order.bind(this)
     this.register_district = this.register_district.bind(this)
+    this.register_benificiary = this.register_benificiary.bind(this)
 
   }
 
@@ -140,6 +141,22 @@ class temp extends Component {
     })
   }
 
+  register_benificiary(record_hash) {
+    this.setState({ loading: true })
+    this.state.delivery.methods.register_benificiary(record_hash).send({ from: this.state.account })
+    .once('receipt', (receipt) => {
+      this.setState({ loading: false })
+    })
+  }
+
+  // verifyVaccine(id) {
+  //   this.setState({ loading: true })
+  //   this.state.delivery.methods.verifyVaccine(id).send({ from: this.state.account })
+  //   .once('receipt', (receipt) => {
+  //     this.setState({ loading: false })
+  //   })
+  // }
+
   
 
 
@@ -171,6 +188,9 @@ class temp extends Component {
                     register_company = {this.register_company}
                     vaccine_registration = {this.vaccine_registration}
                     place_order = {this.place_order}
+
+                    register_benificiary = {this.register_benificiary}
+                    //verifyVaccine = {this.verifyVaccine}
                     
                     />
               }

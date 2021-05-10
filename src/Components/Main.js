@@ -333,7 +333,7 @@ class Main extends Component {
             <tr>
               <th scope="col">id</th>
               <th scope="col">Name </th>
-              {/* <th scope="col">State id </th> */}
+              <th scope="col">State id </th>
               <th scope="col">Address </th> 
               <th scope="col">Allocation </th>
             </tr>
@@ -344,14 +344,34 @@ class Main extends Component {
                 <tr key={key}>
                   <th scope="row">{state.id.toString()}</th>
                   <td>{state.name.toString()}</td>
-                  {/* <td>{state.stateid.toString()}</td> */}
-                  <td>{state.add.toString()}</td> }
+                  <td>{state.stateid.toString()}</td>
+                  <td>{state.add.toString()}</td>
                   <td>{state.allocation.toString()}</td>
                 </tr>  
               )
             })}
           </tbody> }
         </table>
+
+        <h1>Register Benificiary</h1>
+        <form onSubmit={(event) => {
+          event.preventDefault()
+          const record_hash = this.record_hash.value
+        
+          this.props.register_benificiary(record_hash)
+        }}>
+          <div className="form-group mr-sm-2">
+            <input
+              id="hash"
+              type="text"
+              ref={(input) => { this.record_hash = input }}
+              className="form-control"
+              placeholder="Medical Record hash"
+              required />
+          </div>
+          <button type="submit" className="btn btn-primary">Register</button>
+        </form>
+        <p>&nbsp;</p>
 
 
         
