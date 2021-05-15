@@ -75,6 +75,7 @@ contract vaccine{
         string name;
         address state_add;
         order[] allotment;
+        uint total_allotment;
         uint instock;
         uint vaccinated;
         uint distributed;
@@ -86,6 +87,7 @@ contract vaccine{
         string name;
         address add;
         order[] allotment;
+        uint total_allotment;
         uint instock;
         uint vaccinated;
         uint distributed;
@@ -170,30 +172,12 @@ contract vaccine{
     }
 
     modifier onlyState {
-        bool flag = false;
-        for(uint i = 0;i<states_count;i++)
-        {
-            if(stateInfo[i].state_add == msg.sender)
-            {
-                flag = true;
-                break;
-            }
-        }
-        require(flag,'You are not a state ');
+        require(states[msg.sender].state_add == msg.sender,"NOT AUTHORIZED!!! You are not a State");
         _;
     }
 
      modifier onlyDistrict {
-        bool flag = false;
-        for(uint i = 0;i<district_count;i++)
-        {
-            if(districtInfo[i].add == msg.sender)
-            {
-                flag = true;
-                break;
-            }
-        }
-        require(flag,'You are not a District ');
+        require(districts[msg.sender].add == msg.sender,"NOT AUTHORIZED!!! You are not a district");
         _;
     }
     
@@ -248,7 +232,6 @@ contract vaccine{
         return types_counts;
     }
 
-
     
     function register_state(string memory name,address state_add)public onlyOwner
     {
@@ -256,18 +239,20 @@ contract vaccine{
         stateTemp.name = name;
         stateTemp.state_add = state_add;
 
+        tempOrder.allotment = 0;
+        tempOrder.instock = 0;
+        tempOrder.vaccinated = 0;
+
         for(uint i = 0;i< types_counts;i++)
         {
-            tempOrder.company_id = 0;
-            tempOrder.allotment = 0;
-            tempOrder.instock = 0;
-            tempOrder.vaccinated = 0;
+            tempOrder.company_id = i;
             stateTemp.allotment.push(tempOrder);
         }
 
         stateTemp.instock = 0;
         stateTemp.vaccinated = 0;
         stateTemp.distributed = 0;
+        stateTemp.total_allotment = 0;
 
         stateInfo.push(stateTemp);
         states[state_add] = stateTemp;
@@ -281,18 +266,18 @@ contract vaccine{
         districtTemp.id = district_count;
         districtTemp.name = name;
         districtTemp.add = district_add;
-
+        tempOrder.allotment = 0;
+        tempOrder.instock = 0;
+        tempOrder.vaccinated = 0;
         for(uint i = 0;i< types_counts;i++)
         {
             tempOrder.company_id = i;
-            tempOrder.allotment = 0;
-            tempOrder.instock = 0;
-            tempOrder.vaccinated = 0;
             districtTemp.allotment.push(tempOrder);
         }
         districtTemp.instock = 0;
         districtTemp.vaccinated = 0;
         districtTemp.distributed = 0;
+        districtTemp.total_allotment = 0;
         districtInfo.push(districtTemp);
         districts[district_add] = districtTemp;
         district_count++;
@@ -320,6 +305,7 @@ contract vaccine{
         stateInfo[state_id].allotment[company_id].allotment+=newOrder;
         stateInfo[state_id].allotment[company_id].instock+=newOrder;
         stateInfo[state_id].instock+=newOrder;
+        stateInfo[state_id].total_allotment+=newOrder;
 
         orders[company_id].instock-=newOrder;
         available-=newOrder;
@@ -339,6 +325,8 @@ contract vaccine{
         
         districtInfo[district_id].allotment[company_id].allotment+=newOrder;
         districtInfo[district_id].allotment[company_id].instock+=newOrder;
+        districtInfo[district_id].instock+=newOrder;
+        districtInfo[district_id].total_allotment+=newOrder;
 
         stateInfo[sid].allotment[company_id].instock-=newOrder;
         stateInfo[sid].instock-=newOrder;
@@ -364,6 +352,7 @@ contract vaccine{
 
     function verifyVaccine(uint id) public view returns (vaccines memory)
     {
+        require(id<vaccines_counts,"Invalid vaccine ID");
         return _vaccines[id];
     }
 
@@ -374,6 +363,7 @@ contract vaccine{
 
     function getYourStatus(uint256 aadhar) public view returns(benificiary memory)
     {
+        require(records[aadhar].aadhar == aadhar,"NO DATA AVAILABLE!!! as you are not registerd yet");
         return _benificiaries[aadhar];
     }
 
@@ -409,9 +399,8 @@ contract vaccine{
         _managers[company_add].company_id =types_counts;
         _managers[company_add].manager_add = company_add;
 
-         emit _vaccine_type(name,types_counts,period,temp_min,temp_max,company_add);
-
-         types_counts++;
+        emit _vaccine_type(name,types_counts,period,temp_min,temp_max,company_add);
+        types_counts++;
     }
     
     
@@ -435,7 +424,7 @@ contract vaccine{
     {
         require(aadhar != records[aadhar].aadhar,"dont use same aadhar");
         require(age >= 18,"you are below age");
-        //require(name != "","Invalid name");
+
         records[aadhar].id = total_registration;
         records[aadhar].aadhar = aadhar;
         records[aadhar].name = name;
@@ -447,59 +436,52 @@ contract vaccine{
     }
 
 
-    // function register_benificiary(string name,uint256 aadhar,uint age,uint height,uint weight) public
-    // {
-
-        
-    //     require(record_hash.length > 0);
-    //     //require(_medical_representatives[msg.sender].center_id > 0);
-    //     total_registration++;
-    //     _benificiaries[record_hash].benificiary_id = total_registration;
-    //    // _benificiaries[benificiary_add].benificiary_add = benificiary_add;
-    //     _benificiaries[record_hash].medical_reprentative = msg.sender;
-    //     _benificiaries[record_hash].medical_center = _medical_representatives[msg.sender].center_id;
-    //     _benificiaries[record_hash].vaccine_id_1 = 0;
-    //     _benificiaries[record_hash].vaccine_id_2 = 0;
-   
-        
-    // }
-    
-
     function verification(uint256 aadhar)public onlyDistrict
     {
         require(records[aadhar].aadhar == aadhar,"You are not registerd yet");
         require(records[aadhar].valid == false,"You are already verified");
+        require(districtInfo[districts[msg.sender].id].instock > 0,"center does not have the vaccines");
         records[aadhar].valid = true;
         _benificiaries[aadhar].benificiary_id = records[aadhar].id;
         _benificiaries[aadhar].medical_records = aadhar;
         _benificiaries[aadhar].district_id = districts[msg.sender].id;
         _benificiaries[aadhar].medical_reprentative = msg.sender;
-        _benificiaries[aadhar].status = stages(0);
+        _benificiaries[aadhar].status = stages(1);
 
     }
 
     function vaccinate(uint256 record_hash,uint vaccine_id)public onlyDistrict
     {
-        
+         require(records[record_hash].aadhar == record_hash,"You are not registerd yet");
+         require(records[record_hash].valid,"you are not verified yet");
+         require(_vaccines[vaccine_id].valid,"invalid vaccine");
          require(_vaccines[vaccine_id].temp_min > _vaccine_types[_vaccines[vaccine_id].company_id].temp_min,'invalid_min_temp');
          require(_vaccines[vaccine_id].temp_max < _vaccine_types[_vaccines[vaccine_id].company_id].temp_max,'invalid+max_temp');
-         require(_vaccines[vaccine_id].valid);
-         require(_benificiaries[record_hash].status != stages(2),"you have already completed your vaccication");
-         if(_benificiaries[record_hash].status == stages(0))
+         require(_benificiaries[record_hash].status != stages(3),"you have already completed your vaccication");
+
+         districtInfo[districts[msg.sender].id].instock--;
+         districtInfo[districts[msg.sender].id].distributed++;
+         _vaccines[vaccine_id].valid = false;
+         districtInfo[districts[msg.sender].id].allotment[_vaccines[vaccine_id].company_id].instock--;
+         districtInfo[districts[msg.sender].id].allotment[_vaccines[vaccine_id].company_id].vaccinated++;
+         orders[_vaccines[vaccine_id].company_id].vaccinated++;
+         stateInfo[districts[msg.sender].stateid].allotment[_vaccines[vaccine_id].company_id].vaccinated++;
+         if(_benificiaries[record_hash].status == stages(1))
          {
             _benificiaries[record_hash].vaccine_id_1 = vaccine_id;
-            _benificiaries[record_hash].status = stages(1);
+            _benificiaries[record_hash].status = stages(2);
             _benificiaries[record_hash].first_vaccine_time = now;
          }
          else
          {
             _benificiaries[record_hash].vaccine_id_2 = vaccine_id;   
-            _benificiaries[record_hash].status = stages(2);
+            _benificiaries[record_hash].status = stages(3);
             _benificiaries[record_hash].second_vaccine_time = now;
+            vaccinated++;
+            districtInfo[districts[msg.sender].id].vaccinated++;
+            stateInfo[districts[msg.sender].stateid].vaccinated++;
+           // districtInfo[districts[msg.sender].id].allotment[_vaccines[vaccine_id].company_id].vaccinated++;
          }
+         
      }
-
-
-    
-    
 }

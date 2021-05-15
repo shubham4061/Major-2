@@ -4,7 +4,7 @@ require('chai')
   .use(require('chai-as-promised'))
   .should()
 
-contract('vaccine', ([deployer,company_add1,state_reprentative_1,benificiary_1,state_1,state_2,state_3,dist_1,dist_2]) => {
+contract('vaccine', ([deployer,company_add1,company_add2,company_add3,state_1,state_2,state_3,dist_1,dist_2]) => {
   let DM
   before(async () => {
     DM = await Dist_management.deployed({from:deployer})
@@ -23,15 +23,26 @@ contract('vaccine', ([deployer,company_add1,state_reprentative_1,benificiary_1,s
 
   describe('vaccine company registration',async () => {
       let result
-      it('company registered successfully' , async () => {
+      it('covishield' , async () => {
             result = await DM.register_company(30,2,10,'covishield',company_add1,{from:deployer})
            // console.log(result.logs)
       })
 
-      it(' Output' , async () => {
-        result = await DM.getAllvaccineInfo({from:deployer})
-        console.log(result)
+      it('Covaxin' , async () => {
+            result = await DM.register_company(14,5,30,'Covaxin',company_add2,{from:deployer})
+          // console.log(result.logs)
       })
+
+      it('sputnik' , async () => {
+            result = await DM.register_company(28,4,20,'sputnik',company_add3,{from:state_1})
+          // console.log(result.logs)
+      })
+
+
+      // it(' Output' , async () => {
+      //   result = await DM.getAllvaccineInfo({from:deployer})
+      //   console.log(result)
+      // })
 
 
   })
@@ -46,10 +57,26 @@ contract('vaccine', ([deployer,company_add1,state_reprentative_1,benificiary_1,s
 
   describe('Place order',async () => {
     let result
-    it('place order 1' , async () => {
+    it('place order from company 1' , async () => {
           result = await DM.place_order(0,50,{from:deployer})
-          console.log(result.logs)
+          //console.log(result.logs)
     })
+
+    // it('place order from company 2' , async () => {
+    //       result = await DM.place_order(1,40,{from:deployer})
+    //       //console.log(result.logs)
+    // })
+
+    // it('place order from company 3' , async () => {
+    //       result = await DM.place_order(2,40,{from:deployer})
+    //       //console.log(result.logs)
+    // })
+
+    // it(' Output' , async () => {
+    //     result = await DM.getAllvaccineInfo({from:deployer})
+    //     console.log(result)
+    // })
+
   })
   
   
@@ -60,20 +87,20 @@ contract('vaccine', ([deployer,company_add1,state_reprentative_1,benificiary_1,s
     })
 
 
-    it(' Bihar ' , async () => {
-      result = await DM.register_state("Bihar",state_2,{from:deployer})
-    })
+    // it(' Bihar ' , async () => {
+    //   result = await DM.register_state("Bihar",state_2,{from:deployer})
+    // })
 
 
-    it(' Haryana ' , async () => {
-      result = await DM.register_state("haryana",state_3,{from:deployer})
-    })
+    // it(' Haryana ' , async () => {
+    //   result = await DM.register_state("haryana",state_3,{from:deployer})
+    // })
 
     
-    it(' Output' , async () => {
-      result = await DM.getAllStatesInfo({from:deployer})
-      console.log(result)
-    })
+    // it(' Output' , async () => {
+    //   result = await DM.getAllStatesInfo({from:deployer})
+    //   console.log(result)
+    // })
 
   })
   
@@ -81,24 +108,52 @@ contract('vaccine', ([deployer,company_add1,state_reprentative_1,benificiary_1,s
   describe('state quota Allocation',async () => {
     let result
     it(' Uttar pradesh ' , async () => {
-          result = await DM.update_state(0,0,12,{from:deployer})
+          result = await DM.update_state(0,0,20,{from:deployer})
     })
 
 
-    it(' Bihar ' , async () => {
-      result = await DM.update_state(1,0,4,{from:deployer})
-    })
+  //   it(' Bihar ' , async () => {
+  //     result = await DM.update_state(1,0,10,{from:deployer})
+  //   })
 
 
-    it(' Haryana ' , async () => {
-      result = await DM.update_state(2,0,3,{from:deployer})
-    })
+  //   it(' Haryana ' , async () => {
+  //     result = await DM.update_state(2,0,10,{from:deployer})
+  //   })
+
+  //   it(' Uttar pradesh ' , async () => {
+  //     result = await DM.update_state(0,1,20,{from:deployer})
+  //   })
+
+
+  //   it(' Bihar ' , async () => {
+  //     result = await DM.update_state(1,1,10,{from:deployer})
+  //   })
+
+
+  //   it(' Haryana ' , async () => {
+  //     result = await DM.update_state(2,1,10,{from:deployer})
+  //   })
+
+  //   it(' Uttar pradesh ' , async () => {
+  //     result = await DM.update_state(0,2,20,{from:deployer})
+  //   })
+
+
+  //   it(' Bihar ' , async () => {
+  //     result = await DM.update_state(1,2,10,{from:deployer})
+  //   })
+
+
+  //   it(' Haryana ' , async () => {
+  //     result = await DM.update_state(2,2,10,{from:deployer})
+  //   })
 
     
-    it(' Output' , async () => {
-      result = await DM.getAllStatesInfo({from:deployer})
-      console.log(result)
-    })
+  //   it(' Output' , async () => {
+  //     result = await DM.getAllStatesInfo({from:deployer})
+  //     console.log(result)
+  //   })
 
   })
 
@@ -109,14 +164,14 @@ contract('vaccine', ([deployer,company_add1,state_reprentative_1,benificiary_1,s
           result = await DM.register_district(" Prayagraj",dist_1,{from:state_1})
     })
 
-    it(' kanpur ' , async () => {
-      result = await DM.register_district(" Kanpur",dist_2,{from:state_1})
-    })
+  //   it(' kanpur ' , async () => {
+  //     result = await DM.register_district(" Kanpur",dist_2,{from:state_1})
+  //   })
 
-    it(' Output' , async () => {
-      result = await DM.getAllDistrictInfo({from:deployer})
-      console.log(result)
-    })
+  //   it(' Output' , async () => {
+  //     result = await DM.getAllDistrictInfo({from:deployer})
+  //     console.log(result)
+  //   })
 
   })
 
@@ -126,14 +181,30 @@ contract('vaccine', ([deployer,company_add1,state_reprentative_1,benificiary_1,s
           result = await DM.update_district_allocation(0,0,7,{from:state_1})
     })
 
-    it(' kanpur ' , async () => {
-      result = await DM.update_district_allocation(1,0,4,{from:state_1})
-    })
+    // it(' kanpur ' , async () => {
+    //   result = await DM.update_district_allocation(1,0,4,{from:state_1})
+    // })
 
-    it(' Output' , async () => {
-      result = await DM.getAllDistrictInfo({from:deployer})
-      console.log(result)
-    })
+  //   it(' Prayagraj ' , async () => {
+  //     result = await DM.update_district_allocation(0,1,10,{from:state_1})
+  //   })
+
+  //   it(' kanpur ' , async () => {
+  //     result = await DM.update_district_allocation(1,1,5,{from:state_1})
+  //   })
+
+  //   it(' Prayagraj ' , async () => {
+  //     result = await DM.update_district_allocation(0,2,10,{from:state_1})
+  //   })
+
+  //   it(' kanpur ' , async () => {
+  //     result = await DM.update_district_allocation(1,2,5,{from:state_1})
+  //   })
+
+  //   it(' Output' , async () => {
+  //     result = await DM.getAllDistrictInfo({from:deployer})
+  //     console.log(result)
+  //   })
 
   })
 
@@ -145,10 +216,10 @@ contract('vaccine', ([deployer,company_add1,state_reprentative_1,benificiary_1,s
             //console.log(result.logs)
       })
 
-      it('Jindal' , async () => {
-        result = await DM.register_yourself("Jindal",696969696969,69,169,69,{from:company_add1})
-        //console.log(result.logs)
-      })
+  //     it('Jindal' , async () => {
+  //       result = await DM.register_yourself("Jindal",696969696969,69,169,69,{from:company_add1})
+  //       //console.log(result.logs)
+  //     })
   })
 
   describe('Verification',async () => {
@@ -158,10 +229,10 @@ contract('vaccine', ([deployer,company_add1,state_reprentative_1,benificiary_1,s
             //console.log()
       })
 
-      it('Jindal' , async () => {
-        result = await DM.verification(696969696969,{from:dist_1})
-        //console.log(result.logs)
-      })
+      // it('Jindal' , async () => {
+      //   result = await DM.verification(696969696969,{from:dist_1})
+      //   //console.log(result.logs)
+      // })
   })
 
   describe('vaccination',async () => {
@@ -171,35 +242,51 @@ contract('vaccine', ([deployer,company_add1,state_reprentative_1,benificiary_1,s
             //console.log()
       })
 
-      it("jindal's first vaccine "  , async () => {
-        result = await DM.vaccinate(696969696969,2,{from:dist_1})
-        //console.log(result.logs)
-      })
+      // it("jindal's first vaccine "  , async () => {
+      //   result = await DM.vaccinate(696969696969,2,{from:dist_1})
+      //   //console.log(result.logs)
+      // })
 
-      it("jindal's second vaccine "  , async () => {
-        result = await DM.vaccinate(696969696969,3,{from:dist_1})
-        //console.log(result.logs)
-        result = await DM.getYourStatus(696969696969,{from:dist_1})
-        console.log(result);
-      })
+      // it("jindal's second vaccine "  , async () => {
+      //   result = await DM.vaccinate(696969696969,3,{from:dist_1})
+      //   //console.log(result.logs)
+      //   result = await DM.getYourStatus(696969696969,{from:dist_1})
+      //   console.log(result);
+      // })
 
-      it("jindal's third vaccine "  , async () => {
-        result = await DM.vaccinate(696969696969,4,{from:dist_1})
-        console.log(result.logs)
-        result = await DM.getYourStatus(696969696969,{from:dist_1})
-        console.log(result);
-      })
+      // it("jindal's third vaccine "  , async () => {
+      //   result = await DM.vaccinate(696969696969,4,{from:dist_1})
+      //   console.log(result.logs)
+      //   result = await DM.getYourStatus(696969696969,{from:dist_1})
+      //   console.log(result);
+      // })
   })
 
   describe('know your vaccine',async () => {
     let result
     it("Check vaccine 1 " , async () => {
           result = await DM.verifyVaccine(1,{from:dist_1})
-          console.log(result);
+       //   console.log(result);
     })
 })
 
-  
+// describe('All data',async () => {
+//       let result
+//       it("All states info" , async () => {
+//             result = await DM.getAllStatesInfo({from:dist_1})
+//             console.log(result[0].allotment)
+//       })
+
+//       it("All district info "  , async () => {
+//           result = await DM.getAllDistrictInfo({from:dist_1})
+//           console.log(result[0].allotment)
+//       })
+
+//       it("All orders "  , async () => {
+//         result = await DM.getAllOrdersInfo({from:dist_1})
+//         console.log(result);
+//       })
+//   })
 
   
 
